@@ -1,27 +1,29 @@
 package com.stv.foodrecipesapp.network
 
-import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import com.stv.foodrecipesapp.AppExecutors
 import com.stv.foodrecipesapp.model.Recipe
-import com.stv.foodrecipesapp.network.responses.RecipeSearchResponse
 import com.stv.foodrecipesapp.util.AppContants
-import retrofit2.Call
-import java.util.concurrent.TimeUnit
 
 class ApiClient {
 
-    val TAG = "ApiClient"
+    private val TAG = "ApiClient"
 
     private var _mRecipes: MutableLiveData<List<Recipe>> = MutableLiveData()
 
-    private lateinit var retrieveRecipeRunnable: RetrieveRecipeRunnable
+    //private lateinit var retrieveRecipeRunnable: RetrieveRecipeRunnable
 
     val mRecipes: LiveData<List<Recipe>>
-    get() = _mRecipes
+        get() = _mRecipes
 
-    fun searchRecipe(query: String, page: Int){
+    suspend fun searchRecipe(query: String, page: Int) {
+        ServiceGenerator.recipeApi.searchRecipe(
+            AppContants.API_KEY,
+            query,
+            page.toString()
+        )
+    }
+    /*fun searchRecipe(query: String, page: Int){
 
         retrieveRecipeRunnable = RetrieveRecipeRunnable(query, page)
 
@@ -41,7 +43,9 @@ class ApiClient {
 
             if(response.code() == 200){
                 val list: List<Recipe> = response.body()!!.recipes
-                if (page == 1) {_mRecipes.postValue(list)}
+                if (page == 1) {
+                    _mRecipes.postValue(list)
+                }
                 else {
                     var currentList: MutableList<Recipe> = _mRecipes.value as MutableList<Recipe>
                     currentList.addAll(list)
@@ -65,7 +69,7 @@ class ApiClient {
             Log.d(TAG, "cancelRequest: canceling the request")
             cancelRequest = true
         }
-    }
+    }*/
 
     companion object {
         private var INSTANCE: ApiClient? = null

@@ -8,7 +8,7 @@ import retrofit2.http.Query
 
 interface ApiService {
     @GET("api/search")
-    fun searchRecipe(
+    suspend fun searchRecipe(
         @Query("key") key: String,
         @Query("q") query: String,
         @Query("page") page: String
@@ -19,4 +19,11 @@ interface ApiService {
         @Query("key") key: String,
         @Query("rId") recipeId: String
     ): Call<RecipeResponse>
+
+    @GET("api/search")
+    suspend fun searchRecipes(
+        @Query("key") key: String,
+        @Query("q") query: String,
+        @Query("page") page: String
+    ): RecipeSearchResponse
 }
