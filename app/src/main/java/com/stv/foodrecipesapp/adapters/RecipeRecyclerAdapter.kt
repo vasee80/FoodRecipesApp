@@ -26,7 +26,7 @@ class RecipeRecyclerAdapter(
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
 
-        var view: View? = null
+        var view: View?
         when (viewType) {
             RECIPE_TYPE -> {
                 view = LayoutInflater.from(parent.context)
@@ -55,11 +55,7 @@ class RecipeRecyclerAdapter(
     }
 
     override fun getItemCount(): Int {
-        return if (mRecipeList != null) {
-            mRecipeList.size
-        } else {
-            0
-        }
+        return mRecipeList.size
     }
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
@@ -117,7 +113,7 @@ class RecipeRecyclerAdapter(
     }
 
     private fun isLoading(): Boolean {
-        if (mRecipeList != null && mRecipeList.isNotEmpty()) {
+        if (mRecipeList.isNotEmpty()) {
             if (mRecipeList[mRecipeList.size - 1].title == AppContants.LOADING_STRING) {
                 return true
             }
