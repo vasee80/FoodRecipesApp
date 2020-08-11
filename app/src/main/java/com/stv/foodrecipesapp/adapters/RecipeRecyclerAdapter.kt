@@ -1,5 +1,6 @@
 package com.stv.foodrecipesapp.adapters
 
+import android.net.Uri
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -8,6 +9,7 @@ import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
 import com.stv.foodrecipesapp.R
 import com.stv.foodrecipesapp.model.Recipe
+import com.stv.foodrecipesapp.util.AppContants
 import kotlin.math.roundToInt
 
 class RecipeRecyclerAdapter(
@@ -15,36 +17,129 @@ class RecipeRecyclerAdapter(
 ) :
     RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
+    private val RECIPE_TYPE = 1
+    private val LOADING_TYPE = 2
+    private val CATEGORY_TYPE = 3
+
     private var mRecipeList: List<Recipe> = ArrayList()
     private var mOnRecipeListener: OnRecipeListener = onRecipeListener
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
-        val view: View = LayoutInflater.from(parent.context)
-            .inflate(R.layout.layout_recipe_list_item, parent, false)
-        return RecipeViewHolder(view, mOnRecipeListener)
+
+        var view: View? = null
+        when (viewType) {
+            RECIPE_TYPE -> {
+                view = LayoutInflater.from(parent.context)
+                    .inflate(R.layout.layout_recipe_list_item, parent, false)
+                return RecipeViewHolder(view, mOnRecipeListener)
+            }
+
+            LOADING_TYPE -> {
+                view = LayoutInflater.from(parent.context)
+                    .inflate(R.layout.layout_loading_list_item, parent, false)
+                return LoadingViewHolder(view)
+            }
+
+            CATEGORY_TYPE -> {
+                view = LayoutInflater.from(parent.context)
+                    .inflate(R.layout.layout_category_list_item, parent, false)
+                return CategoryViewHolder(view, mOnRecipeListener)
+            }
+
+            else -> {
+                view = LayoutInflater.from(parent.context)
+                    .inflate(R.layout.layout_recipe_list_item, parent, false)
+                return RecipeViewHolder(view, mOnRecipeListener)
+            }
+        }
     }
 
     override fun getItemCount(): Int {
         return if (mRecipeList != null) {
             mRecipeList.size
         } else {
-            1
+            0
         }
     }
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
 
-        val requestOptions: RequestOptions =
-            RequestOptions().centerCrop().placeholder(R.drawable.ic_launcher_background)
+        val itemType = getItemViewType(position)
 
-        Glide.with(holder.itemView.context).setDefaultRequestOptions(requestOptions)
-            .load(mRecipeList[position].image_url)
-            .into((holder as RecipeViewHolder).image)
+        if (itemType == RECIPE_TYPE) {
+            val requestOptions: RequestOptions =
+                RequestOptions().centerCrop().placeholder(R.drawable.ic_launcher_background)
 
-        holder.title.text = mRecipeList[position].title
-        holder.publisher.text = mRecipeList[position].publisher
-        holder.socialScore.text =
-            mRecipeList[position].social_rank.roundToInt().toString()
+            Glide.with(holder.itemView.context).setDefaultRequestOptions(requestOptions)
+                .load(mRecipeList[position].image_url)
+                .into((holder as RecipeViewHolder).image)
+
+            holder.title.text = mRecipeList[position].title
+            holder.publisher.text = mRecipeList[position].publisher
+            holder.socialScore.text =
+                mRecipeList[position].social_rank.roundToInt().toString()
+        } else if (itemType == CATEGORY_TYPE) {
+            val requestOptions: RequestOptions =
+                RequestOptions().centerCrop().placeholder(R.drawable.ic_launcher_background)
+
+            val path: Uri =
+                Uri.parse("android.resource://com.stv.foodrecipesapp/drawable/${mRecipeList[position].image_url}")
+            Glide.with(holder.itemView.context).setDefaultRequestOptions(requestOptions)
+                .load(path)
+                .into((holder as CategoryViewHolder).imageView)
+
+            holder.titleView.text = mRecipeList[position].title
+        }
+    }
+
+    override fun getItemViewType(position: Int): Int {
+        return when {
+            mRecipeList[position].social_rank.toInt() == -1 -> {
+                CATEGORY_TYPE
+            }
+            mRecipeList[position].title == AppContants.LOADING_STRING -> {
+                LOADING_TYPE
+            }
+            else -> {
+                RECIPE_TYPE
+            }
+        }
+    }
+
+    fun displayLoading() {
+        if (!isLoading()) {
+            val recipe = Recipe(AppContants.LOADING_STRING, "", arrayOf(), "", "", 0F)
+            var loadingList: MutableList<Recipe> = ArrayList()
+            loadingList.add(recipe)
+            mRecipeList = loadingList
+            notifyDataSetChanged()
+        }
+    }
+
+    private fun isLoading(): Boolean {
+        if (mRecipeList != null && mRecipeList.isNotEmpty()) {
+            if (mRecipeList[mRecipeList.size - 1].title == AppContants.LOADING_STRING) {
+                return true
+            }
+        }
+        return false
+    }
+
+    fun displaySearchCategoties() {
+        var categoryList: MutableList<Recipe> = ArrayList()
+        for (i in AppContants.DEFAULT_SEARCH_CATEGORIES.indices) {
+            var recipe = Recipe(
+                AppContants.DEFAULT_SEARCH_CATEGORIES[i],
+                "",
+                arrayOf(),
+                "",
+                AppContants.DEFAULT_SEARCH_CATEGORY_IMAGES[i],
+                -1F
+            )
+            categoryList.add(recipe)
+        }
+        setRecipesList(categoryList)
+
     }
 
     fun setRecipesList(list: List<Recipe>) {

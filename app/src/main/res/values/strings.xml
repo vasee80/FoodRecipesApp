@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">FoodRecipesApp</string>
+    <string name="search_query_hint">chicken breast</string>
+    <string name="category_name">Barbeque</string>
 </resources>

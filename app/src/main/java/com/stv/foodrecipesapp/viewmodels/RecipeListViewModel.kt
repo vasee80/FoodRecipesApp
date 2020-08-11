@@ -11,6 +11,8 @@ class RecipeListViewModel : ViewModel() {
 
     private val recipeRepository: RecipeRepository = RecipeRepository.getInstance()
 
+    var isViewCategory: Boolean = false
+
     val mRecipe: LiveData<List<Recipe>>
         get() = recipeRepository.getRecipes()
 
@@ -18,6 +20,7 @@ class RecipeListViewModel : ViewModel() {
         query: String,
         page: Int
     ) = liveData(Dispatchers.IO) {
+        isViewCategory = true
         val retriveRecipeAbstractMutableList = recipeRepository.searchRecipes(query, page)
         emit(retriveRecipeAbstractMutableList.recipes)
     }
