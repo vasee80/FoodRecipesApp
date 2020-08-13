@@ -12,6 +12,7 @@ class RecipeListViewModel : ViewModel() {
     private val recipeRepository: RecipeRepository = RecipeRepository.getInstance()
 
     var isViewingRecipes: Boolean = false
+    var isPerformingQuery: Boolean = false
 
     val mRecipe: LiveData<List<Recipe>>
         get() = recipeRepository.getRecipes()
@@ -31,5 +32,12 @@ class RecipeListViewModel : ViewModel() {
             return false
         }
         return true
+    }
+
+    fun searchNextPage() = liveData(Dispatchers.IO) {
+        if (!isPerformingQuery && isViewingRecipes) {
+            val recipeAbstractMutableList = recipeRepository.searchNextPage()
+            emit(recipeAbstractMutableList.recipes)
+        }
     }
 }

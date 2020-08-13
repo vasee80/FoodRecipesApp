@@ -88,6 +88,24 @@ class RecipeListActivity : BaseActivity(), OnRecipeListener {
                     deco.setDrawable(this)
                 }
             })
+
+        recyclerView.addOnScrollListener(object : RecyclerView.OnScrollListener() {
+            override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
+                if (!recyclerView.canScrollVertically(1)) {
+                    // search next page
+                    searchNextPage()
+                }
+            }
+        })
+    }
+
+    private fun searchNextPage() {
+        recipeListViewModel.searchNextPage().observe(this, Observer {
+            for (recipe: Recipe in it) {
+                Log.d(TAG, "subscribeObservers recipe title: ${recipe.title}")
+            }
+            recipeRecyclerAdapter.setRecipesList(it)
+        })
     }
 
     private fun initSearchView() {

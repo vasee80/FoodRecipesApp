@@ -3,7 +3,6 @@ package com.stv.foodrecipesapp.network
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.stv.foodrecipesapp.model.Recipe
-import com.stv.foodrecipesapp.util.AppContants
 
 class ApiClient {
 
@@ -17,11 +16,11 @@ class ApiClient {
         get() = _mRecipes
 
     suspend fun searchRecipe(query: String, page: Int) {
-        ServiceGenerator.recipeApi.searchRecipe(
+        /*ServiceGenerator.recipeApi.searchRecipe(
             AppContants.API_KEY,
             query,
             page.toString()
-        )
+        )*/
     }
     /*fun searchRecipe(query: String, page: Int){
 

@@ -96,6 +96,10 @@ class RecipeRecyclerAdapter(
             mRecipeList[position].title == AppContants.LOADING_STRING -> {
                 LOADING_TYPE
             }
+            (position == (mRecipeList.size - 1)
+                    && position != 0) -> {
+                LOADING_TYPE
+            }
             else -> {
                 RECIPE_TYPE
             }
