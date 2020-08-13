@@ -5,6 +5,7 @@ import com.stv.foodrecipesapp.model.Recipe
 import com.stv.foodrecipesapp.network.ApiClient
 import com.stv.foodrecipesapp.network.ApiService
 import com.stv.foodrecipesapp.network.RetrofitClient
+import com.stv.foodrecipesapp.network.responses.RecipeResponse
 import com.stv.foodrecipesapp.network.responses.RecipeSearchResponse
 import com.stv.foodrecipesapp.util.AppContants
 import kotlin.properties.Delegates
@@ -15,10 +16,16 @@ class RecipeRepository {
     private lateinit var mQuery: String
     private var mPageNumber by Delegates.notNull<Int>()
 
-    var client: ApiService = RetrofitClient.retrofit
+    var apiService: ApiService = RetrofitClient.retrofit
 
     fun getRecipes(): LiveData<List<Recipe>> {
         return apiClient.mRecipes
+    }
+
+    suspend fun getRecipe(
+        recipeId: String
+    ): RecipeResponse {
+        return apiService.getRecipe(AppContants.API_KEY, recipeId)
     }
 
     suspend fun searchRecipes(
@@ -27,7 +34,7 @@ class RecipeRepository {
     ): RecipeSearchResponse {
         this.mQuery = query
         this.mPageNumber = page
-        return client.searchRecipes(AppContants.API_KEY, query, page.toString())
+        return apiService.searchRecipes(AppContants.API_KEY, query, page.toString())
     }
 
     suspend fun searchNextPage(): RecipeSearchResponse {

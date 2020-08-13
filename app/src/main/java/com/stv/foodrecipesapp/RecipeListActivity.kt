@@ -1,5 +1,6 @@
 package com.stv.foodrecipesapp
 
+import android.content.Intent
 import android.graphics.drawable.ShapeDrawable
 import android.graphics.drawable.shapes.RectShape
 import android.os.Bundle
@@ -15,6 +16,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.stv.foodrecipesapp.adapters.OnRecipeListener
 import com.stv.foodrecipesapp.adapters.RecipeRecyclerAdapter
 import com.stv.foodrecipesapp.model.Recipe
+import com.stv.foodrecipesapp.util.AppContants
 import com.stv.foodrecipesapp.viewmodels.RecipeListViewModel
 
 class RecipeListActivity : BaseActivity(), OnRecipeListener {
@@ -128,7 +130,10 @@ class RecipeListActivity : BaseActivity(), OnRecipeListener {
     }
 
     override fun onRecipeClick(position: Int) {
+        val intent = Intent(this, RecipeActivity::class.java)
 
+        intent.putExtra(AppContants.RECIPE, recipeRecyclerAdapter.selectedRecipe(position))
+        startActivity(intent)
     }
 
     override fun onCategoryClick(category: String?) {
@@ -141,6 +146,6 @@ class RecipeListActivity : BaseActivity(), OnRecipeListener {
 
     private fun displaySearchCategories() {
         recipeListViewModel.isViewingRecipes = false
-        recipeRecyclerAdapter.displaySearchCategoties()
+        recipeRecyclerAdapter.displaySearchCategories()
     }
 }

@@ -26,7 +26,7 @@ class RecipeRecyclerAdapter(
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
 
-        var view: View?
+        val view: View?
         when (viewType) {
             RECIPE_TYPE -> {
                 view = LayoutInflater.from(parent.context)
@@ -109,7 +109,7 @@ class RecipeRecyclerAdapter(
     fun displayLoading() {
         if (!isLoading()) {
             val recipe = Recipe(AppContants.LOADING_STRING, "", arrayOf(), "", "", 0F)
-            var loadingList: MutableList<Recipe> = ArrayList()
+            val loadingList: MutableList<Recipe> = ArrayList()
             loadingList.add(recipe)
             mRecipeList = loadingList
             notifyDataSetChanged()
@@ -125,10 +125,10 @@ class RecipeRecyclerAdapter(
         return false
     }
 
-    fun displaySearchCategoties() {
-        var categoryList: MutableList<Recipe> = ArrayList()
+    fun displaySearchCategories() {
+        val categoryList: MutableList<Recipe> = ArrayList()
         for (i in AppContants.DEFAULT_SEARCH_CATEGORIES.indices) {
-            var recipe = Recipe(
+            val recipe = Recipe(
                 AppContants.DEFAULT_SEARCH_CATEGORIES[i],
                 "",
                 arrayOf(),
@@ -145,5 +145,12 @@ class RecipeRecyclerAdapter(
     fun setRecipesList(list: List<Recipe>) {
         mRecipeList = list
         notifyDataSetChanged()
+    }
+
+    fun selectedRecipe(position: Int): Recipe? {
+        if (mRecipeList.isNotEmpty()) {
+            return mRecipeList[position]
+        }
+        return null
     }
 }

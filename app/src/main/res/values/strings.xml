@@ -3,4 +3,6 @@
     <string name="search_query_hint">chicken breast</string>
     <string name="category_name">Barbeque</string>
     <string name="categories">Categories</string>
+    <string name="some_recipe_title">Default Recipe title</string>
+    <string name="ingredients">Ingredients</string>
 </resources>
