@@ -3,6 +3,7 @@ package com.stv.foodrecipesapp.viewmodels
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.liveData
 import com.stv.foodrecipesapp.repository.RecipeRepository
+import com.stv.foodrecipesapp.util.Resource
 import kotlinx.coroutines.Dispatchers
 
 class RecipeViewModel : ViewModel() {
@@ -13,9 +14,14 @@ class RecipeViewModel : ViewModel() {
     fun getRecipe(
         recipeId: String
     ) = liveData(Dispatchers.IO) {
-        isViewingRecipePage = true
-        val retriveRecipeResult = recipeRepository.getRecipe(recipeId)
-        emit(retriveRecipeResult.recipe)
+        try {
+            isViewingRecipePage = true
+            val retriveRecipeResult = recipeRepository.getRecipe(recipeId)
+            //emit(retriveRecipeResult.recipe)
+            emit(Resource.Success(retriveRecipeResult.recipe))
+        } catch (e: Exception) {
+            emit(Resource.Error(e.message.toString(), null))
+        }
     }
 
     fun onBackPressed(): Boolean {

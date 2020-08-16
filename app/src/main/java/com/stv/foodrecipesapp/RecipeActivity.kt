@@ -14,6 +14,7 @@ import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
 import com.stv.foodrecipesapp.model.Recipe
 import com.stv.foodrecipesapp.util.AppContants
+import com.stv.foodrecipesapp.util.Resource
 import com.stv.foodrecipesapp.viewmodels.RecipeViewModel
 import kotlin.math.roundToInt
 
@@ -47,35 +48,40 @@ class RecipeActivity : BaseActivity() {
     private fun incomingIntent() {
         if (intent.hasExtra(AppContants.RECIPE)) {
             val recipe: Recipe? = intent.getParcelableExtra(AppContants.RECIPE)
-            Log.d(TAG, "incomingIntent: ${recipe!!.recipe_id}")
+            //Log.d(TAG, "incomingIntent: ${recipe!!.recipe_id}")
             loadData(recipe!!.recipe_id)
         }
     }
 
     private fun loadData(recipeId: String) {
         recipeViewModel.getRecipe(recipeId).observe(this, Observer {
-            Log.d(TAG, "loadData: ${it.ingredients}")
-            mScrollView.visibility = View.VISIBLE
-            titleView.text = it.title
-            rankView.text = (it.social_rank.roundToInt()).toString()
+            when (it) {
+                is Resource.Success -> it.data?.let {
+                    Log.d(TAG, "loadData: ${it.ingredients}")
+                    mScrollView.visibility = View.VISIBLE
+                    titleView.text = it.title
+                    rankView.text = (it.social_rank.roundToInt()).toString()
 
-            ingrediantContains.removeAllViews()
-            for (ingredient in it.ingredients!!) {
-                val textView = TextView(this)
-                textView.text = ingredient
-                textView.textSize = 15F
-                textView.layoutParams = LinearLayout.LayoutParams(
-                    ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT
-                )
-                ingrediantContains.addView(textView)
+                    ingrediantContains.removeAllViews()
+                    for (ingredient in it.ingredients!!) {
+                        val textView = TextView(this)
+                        textView.text = ingredient
+                        textView.textSize = 15F
+                        textView.layoutParams = LinearLayout.LayoutParams(
+                            ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT
+                        )
+                        ingrediantContains.addView(textView)
+                    }
+
+                    val requestOptions: RequestOptions =
+                        RequestOptions().centerCrop().placeholder(R.drawable.ic_launcher_background)
+
+                    Glide.with(this).setDefaultRequestOptions(requestOptions)
+                        .load(it.image_url)
+                        .into(mRecipeImageView)
+                }
+                is Resource.Error -> Log.d(TAG, "loadData error: ${it.message}")
             }
-
-            val requestOptions: RequestOptions =
-                RequestOptions().centerCrop().placeholder(R.drawable.ic_launcher_background)
-
-            Glide.with(this).setDefaultRequestOptions(requestOptions)
-                .load(it.image_url)
-                .into(mRecipeImageView)
         })
     }
 }
